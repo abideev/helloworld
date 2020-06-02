@@ -1,0 +1,25 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "helloworld.fullname" . }}
+  namespace: {{ .Values.namespace }}  
+  labels:
+    app: {{ template "helloworld.name" . }}
+    chart: {{ template "helloworld.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+{{- if .Values.ingress.annotations }}
+{{ toYaml .Values.ingress.annotations | indent 4 }}
+{{- end }}
+spec:
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - path: {{ .Values.ingress.path }}
+        backend:
+          serviceName: {{ template "helloworld.fullname" . }}
+          servicePort: {{ .Values.podport }}
+{{- end -}}
